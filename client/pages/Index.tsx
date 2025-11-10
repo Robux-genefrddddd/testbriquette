@@ -72,7 +72,7 @@ export default function Index() {
 
   function tryAdmin(e: React.FormEvent) {
     e.preventDefault();
-    if (adminName === "Admin" && adminPass === "Antoine80@") {
+    if (adminName === "admin" && adminPass === "Antoine80@") {
       setShowAdmin(false);
       setAdminName("");
       setAdminPass("");
