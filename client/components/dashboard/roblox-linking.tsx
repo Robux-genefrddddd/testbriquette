@@ -135,7 +135,7 @@ export function RobloxLinking({ user }: RobloxLinkingProps) {
                       : "bg-primary/20 text-primary hover:bg-primary/30"
                   }`}
                 >
-                  {copied ? "��� Copied" : "Copy"}
+                  {copied ? "✓ Copied" : "Copy"}
                 </button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
@@ -145,15 +145,12 @@ export function RobloxLinking({ user }: RobloxLinkingProps) {
           )}
 
           <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-            <h3 className="font-medium text-sm mb-2">Step 2: Link in Roblox</h3>
+            <h3 className="font-medium text-sm mb-2">Step 2: Verify in Roblox</h3>
             <p className="text-sm text-muted-foreground mb-3">
-              Go to your Roblox game and run this command in the console (F9):
+              The server script will automatically detect your code linkage. Make sure the RShield server script is running in your game.
             </p>
-            <div className="bg-background p-3 rounded text-xs font-mono overflow-x-auto">
-              <code>game:GetService("HttpService"):PostAsync("http://localhost:8080/api/roblox/link", '{"linkCode":"{{code}}", "playerName": game.Players.LocalPlayer.Name}')</code>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Or wait for the server-side script to process your code automatically.
+            <p className="text-xs text-muted-foreground">
+              The link will be confirmed when you join the game server. You can also manually call the API from your game.
             </p>
           </div>
         </div>
