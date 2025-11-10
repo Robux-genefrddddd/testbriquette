@@ -284,6 +284,25 @@ router.get("/command", (async (req, res) => {
   res.json({ commands: cmds });
 }) as RequestHandler);
 
+// Mark command as executed
+router.post("/command/:id/execute", (async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ error: "missing_command_id" });
+  const db = getFirestore();
+  try {
+    await db
+      .collection("commands")
+      .doc(id)
+      .update({
+        executed: true,
+        executedAt: Date.now(),
+      });
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(404).json({ error: "command_not_found" });
+  }
+}) as RequestHandler);
+
 router.post("/log", (async (req, res) => {
   const { level, message, serverId, meta } = req.body as {
     level?: string;
