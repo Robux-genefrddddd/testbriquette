@@ -5,7 +5,9 @@ export default function Dashboard() {
     <div className="min-h-[70vh] container py-10">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Overview</h1>
-        <Link to="/" className="text-sm text-primary hover:underline">← Retour</Link>
+        <Link to="/" className="text-sm text-primary hover:underline">
+          ← Retour
+        </Link>
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-xl border border-border/60 p-4 bg-card/60">

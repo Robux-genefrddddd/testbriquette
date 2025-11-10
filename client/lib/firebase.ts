@@ -18,7 +18,9 @@ const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 // Initialize Analytics only in supported environments
 isSupported().then((ok) => {
   if (ok) {
-    try { getAnalytics(app); } catch {}
+    try {
+      getAnalytics(app);
+    } catch {}
   }
 });
 
