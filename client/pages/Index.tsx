@@ -228,7 +228,7 @@ export default function Index() {
                   value={adminName}
                   onChange={(e) => setAdminName(e.target.value)}
                   className="mt-1 w-full rounded-md bg-background border border-border px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Admin"
+                  placeholder="admin"
                 />
               </div>
               <div>
