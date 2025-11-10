@@ -115,6 +115,43 @@ router.post("/admin/verify", requireAuth, (async (req, res) => {
   }
 }) as RequestHandler);
 
+// Admin update user role
+router.post("/admin/update-role", requireAuth, requireRole("admin"), (async (
+  req,
+  res,
+) => {
+  const { uid, role } = req.body as { uid?: string; role?: string };
+  if (!uid || !role) return res.status(400).json({ error: "missing_params" });
+  if (!["user", "moderator", "admin"].includes(role)) {
+    return res.status(400).json({ error: "invalid_role" });
+  }
+  const db = getFirestore();
+  await db.collection("users").doc(uid).set(
+    { role },
+    { merge: true },
+  );
+  res.json({ ok: true });
+}) as RequestHandler);
+
+// Kick player (create a kick command)
+router.post("/kick", requireAuth, requireRole("moderator"), (async (
+  req,
+  res,
+) => {
+  const { robloxUserId } = req.body as { robloxUserId?: string };
+  if (!robloxUserId) return res.status(400).json({ error: "missing_params" });
+  const db = getFirestore();
+  await db.collection("commands").add({
+    target: "global",
+    action: "kick",
+    params: { playerUserId: robloxUserId },
+    executed: false,
+    createdAt: Date.now(),
+    by: (req as any).uid,
+  });
+  res.json({ ok: true });
+}) as RequestHandler);
+
 // Admin create key
 router.post("/license/createKey", requireAuth, requireRole("admin"), (async (
   req,
