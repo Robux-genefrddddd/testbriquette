@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 export default function Index() {
   const [mode, setMode] = useState<"login" | "register">("login");
+  const [step, setStep] = useState<"email" | "password">("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState<User | null>(null);
@@ -23,9 +24,14 @@ export default function Index() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => setUser(u));
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      if (u) {
+        navigate("/dashboard");
+      }
+    });
     return () => unsub();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -51,15 +57,20 @@ export default function Index() {
         toast.success("Connecté");
         navigate("/dashboard");
       } else {
-        const cred = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password,
-        );
-        try {
-          await sendEmailVerification(cred.user);
-        } catch {}
-        toast.success("Compte créé. Vérifiez votre email.");
+        if (step === "email") {
+          setStep("password");
+        } else {
+          const cred = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          try {
+            await sendEmailVerification(cred.user);
+          } catch {}
+          toast.success("Compte créé. Vérifiez votre email.");
+          navigate("/activate");
+        }
       }
     } catch (err: any) {
       const msg =
@@ -72,7 +83,7 @@ export default function Index() {
 
   function tryAdmin(e: React.FormEvent) {
     e.preventDefault();
-    if (adminName === "Admin" && adminPass === "Antoine80@") {
+    if (adminName === "admin" && adminPass === "Antoine80@") {
       setShowAdmin(false);
       setAdminName("");
       setAdminPass("");
@@ -80,6 +91,10 @@ export default function Index() {
     } else {
       toast.error("Identifiants admin invalides");
     }
+  }
+
+  if (user) {
+    return null;
   }
 
   return (
@@ -101,19 +116,6 @@ export default function Index() {
             >
               Discord
             </a>
-            {user ? (
-              <>
-                <Link to="/dashboard" className="hover:text-primary">
-                  Dashboard
-                </Link>
-                <button
-                  onClick={() => signOut(auth)}
-                  className="px-3 py-1 rounded-md bg-muted hover:bg-accent"
-                >
-                  Logout
-                </button>
-              </>
-            ) : null}
           </nav>
         </div>
       </header>
@@ -129,88 +131,133 @@ export default function Index() {
             </p>
           </div>
           <div className="bg-card/80 backdrop-blur rounded-2xl border border-border/60 p-6 shadow-2xl">
-            <div className="flex gap-1 mb-6">
-              <button
-                onClick={() => setMode("login")}
-                className={cn(
-                  "flex-1 py-2 rounded-md",
-                  mode === "login"
-                    ? "bg-primary text-black"
-                    : "bg-muted hover:bg-accent",
-                )}
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setMode("register")}
-                className={cn(
-                  "flex-1 py-2 rounded-md",
-                  mode === "register"
-                    ? "bg-primary text-black"
-                    : "bg-muted hover:bg-accent",
-                )}
-              >
-                Register
-              </button>
-            </div>
-            <form onSubmit={handleAuth} className="space-y-3">
-              <div>
-                <label className="text-sm">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="mt-1 w-full rounded-md bg-background border border-border px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="you@example.com"
-                />
-              </div>
-              <div>
-                <label className="text-sm">Mot de passe</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="mt-1 w-full rounded-md bg-background border border-border px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full py-2 rounded-md bg-primary text-black font-semibold"
-              >
-                {title}
-              </button>
-            </form>
+            {mode === "login" ? (
+              <>
+                <h2 className="text-lg font-semibold mb-4">Se connecter</h2>
+                <form onSubmit={handleAuth} className="space-y-3">
+                  <div>
+                    <label className="text-sm">Email</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="mt-1 w-full rounded-md bg-background border border-border px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm">Mot de passe</label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="mt-1 w-full rounded-md bg-background border border-border px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-2 rounded-md bg-primary text-black font-semibold"
+                  >
+                    Se connecter
+                  </button>
+                </form>
+                <button
+                  onClick={() => {
+                    setMode("register");
+                    setStep("email");
+                    setEmail("");
+                    setPassword("");
+                  }}
+                  className="w-full mt-3 py-2 rounded-md border border-primary/50 text-primary font-semibold hover:bg-primary/10"
+                >
+                  Créer un compte
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="text-lg font-semibold mb-4">Créer un compte</h2>
+                <form onSubmit={handleAuth} className="space-y-3">
+                  {step === "email" ? (
+                    <>
+                      <div>
+                        <label className="text-sm">Email</label>
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          className="mt-1 w-full rounded-md bg-background border border-border px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="you@example.com"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full py-2 rounded-md bg-primary text-black font-semibold"
+                      >
+                        Suivant
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <label className="text-sm">Email</label>
+                        <input
+                          type="email"
+                          value={email}
+                          disabled
+                          className="mt-1 w-full rounded-md bg-background/50 border border-border px-3 py-2 outline-none opacity-60"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm">Mot de passe</label>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          className="mt-1 w-full rounded-md bg-background border border-border px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full py-2 rounded-md bg-primary text-black font-semibold"
+                      >
+                        Créer un compte
+                      </button>
+                    </>
+                  )}
+                </form>
+                <button
+                  onClick={() => {
+                    setMode("login");
+                    setStep("email");
+                    setEmail("");
+                    setPassword("");
+                  }}
+                  className="w-full mt-3 py-2 rounded-md border border-primary/50 text-primary font-semibold hover:bg-primary/10"
+                >
+                  Se connecter
+                </button>
+              </>
+            )}
+
             <div className="my-6 h-px bg-border" />
             <div className="flex items-center justify-between text-sm">
-              <Link
-                to="/activate"
-                className="underline decoration-primary decoration-2 underline-offset-4 hover:text-primary"
-              >
-                Activer une clé
-              </Link>
               <button
                 onClick={() => setShowAdmin(true)}
                 className="text-muted-foreground hover:text-primary"
               >
                 Admin
               </button>
+              <a
+                href="https://discord.gg/"
+                className="text-muted-foreground hover:text-primary"
+              >
+                Pas de clé ? Discord
+              </a>
             </div>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              to={user ? "/dashboard" : "/#"}
-              className="px-5 py-2.5 rounded-lg bg-primary text-black font-semibold shadow-[0_0_30px_rgba(14,165,255,0.35)] hover:shadow-[0_0_40px_rgba(14,165,255,0.55)] transition"
-            >
-              {user ? "Ouvrir le Dashboard" : "Commencer"}
-            </Link>
-            <a
-              href="https://discord.gg/"
-              className="px-5 py-2.5 rounded-lg border border-border hover:border-primary/60 transition"
-            >
-              Pas de clé ? Contact Discord
-            </a>
           </div>
         </div>
       </main>
@@ -228,7 +275,7 @@ export default function Index() {
                   value={adminName}
                   onChange={(e) => setAdminName(e.target.value)}
                   className="mt-1 w-full rounded-md bg-background border border-border px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Admin"
+                  placeholder="admin"
                 />
               </div>
               <div>

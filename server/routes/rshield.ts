@@ -100,6 +100,55 @@ router.get("/license/check", (async (req, res) => {
   res.json({ allowed, uid: targetUid });
 }) as RequestHandler);
 
+// Admin verify password and set role
+router.post("/admin/verify", requireAuth, (async (req, res) => {
+  const { name, password } = req.body as { name?: string; password?: string };
+  if (name === "admin" && password === "Antoine80@") {
+    const db = getFirestore();
+    await db
+      .collection("users")
+      .doc((req as any).uid)
+      .set({ role: "admin" }, { merge: true });
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ error: "invalid_credentials" });
+  }
+}) as RequestHandler);
+
+// Admin update user role
+router.post("/admin/update-role", requireAuth, requireRole("admin"), (async (
+  req,
+  res,
+) => {
+  const { uid, role } = req.body as { uid?: string; role?: string };
+  if (!uid || !role) return res.status(400).json({ error: "missing_params" });
+  if (!["user", "moderator", "admin"].includes(role)) {
+    return res.status(400).json({ error: "invalid_role" });
+  }
+  const db = getFirestore();
+  await db.collection("users").doc(uid).set({ role }, { merge: true });
+  res.json({ ok: true });
+}) as RequestHandler);
+
+// Kick player (create a kick command)
+router.post("/kick", requireAuth, requireRole("moderator"), (async (
+  req,
+  res,
+) => {
+  const { robloxUserId } = req.body as { robloxUserId?: string };
+  if (!robloxUserId) return res.status(400).json({ error: "missing_params" });
+  const db = getFirestore();
+  await db.collection("commands").add({
+    target: "global",
+    action: "kick",
+    params: { playerUserId: robloxUserId },
+    executed: false,
+    createdAt: Date.now(),
+    by: (req as any).uid,
+  });
+  res.json({ ok: true });
+}) as RequestHandler);
+
 // Admin create key
 router.post("/license/createKey", requireAuth, requireRole("admin"), (async (
   req,
@@ -228,19 +277,16 @@ router.post("/server/register", (async (req, res) => {
   if (!serverId) return res.status(400).json({ error: "missing_serverId" });
   const db = getFirestore();
   const secret = crypto.randomBytes(12).toString("hex");
-  await db
-    .collection("servers")
-    .doc(serverId)
-    .set(
-      {
-        serverId,
-        secret,
-        registeredAt: Date.now(),
-        lastSeen: Date.now(),
-        active: true,
-      },
-      { merge: true },
-    );
+  await db.collection("servers").doc(serverId).set(
+    {
+      serverId,
+      secret,
+      registeredAt: Date.now(),
+      lastSeen: Date.now(),
+      active: true,
+    },
+    { merge: true },
+  );
   res.json({ ok: true, secret });
 }) as RequestHandler);
 
@@ -267,6 +313,22 @@ router.get("/command", (async (req, res) => {
     .get();
   const cmds = q.docs.map((d) => ({ id: d.id, ...d.data() }));
   res.json({ commands: cmds });
+}) as RequestHandler);
+
+// Mark command as executed
+router.post("/command/:id/execute", (async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ error: "missing_command_id" });
+  const db = getFirestore();
+  try {
+    await db.collection("commands").doc(id).update({
+      executed: true,
+      executedAt: Date.now(),
+    });
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(404).json({ error: "command_not_found" });
+  }
 }) as RequestHandler);
 
 router.post("/log", (async (req, res) => {
@@ -315,16 +377,14 @@ router.post("/ban", requireAuth, requireRole("moderator"), (async (
   };
   if (!robloxUserId) return res.status(400).json({ error: "missing_params" });
   const db = getFirestore();
-  await db
-    .collection("bans")
-    .add({
-      robloxUserId,
-      reason: reason || "",
-      active: true,
-      createdAt: Date.now(),
-      expiresAt: expiresAt || null,
-      by: (req as any).uid,
-    });
+  await db.collection("bans").add({
+    robloxUserId,
+    reason: reason || "",
+    active: true,
+    createdAt: Date.now(),
+    expiresAt: expiresAt || null,
+    by: (req as any).uid,
+  });
   res.json({ ok: true });
 }) as RequestHandler);
 
