@@ -252,10 +252,12 @@ local function pollCommands()
 
 	if success and commands and commands.commands then
 		for _, cmd in ipairs(commands.commands) do
-			executeCommand(cmd)
+			local cmdSuccess, _ = executeCommand(cmd)
 
-			-- Mark command as executed
-			makeRequest("POST", "/command/" .. cmd.id .. "/execute", {})
+			if cmdSuccess then
+				-- Mark command as executed only if it ran successfully
+				makeRequest("POST", "/command/" .. cmd.id .. "/execute", {})
+			end
 		end
 	end
 end
