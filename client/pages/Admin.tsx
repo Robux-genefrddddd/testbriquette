@@ -28,11 +28,12 @@ export default function Admin() {
       },
       body: JSON.stringify({ name, password: pass }),
     });
+    const data = await res.json().catch(() => ({}));
     if (res.ok) {
       setGateOk(true);
       toast.success("Accès accordé");
     } else {
-      toast.error("Accès refusé");
+      toast.error(data?.error === "invalid_credentials" ? "Identifiants invalides" : "Erreur d'accès");
     }
   }
 
