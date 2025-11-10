@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, User, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useActiveLicense } from "@/hooks/use-active-license";
+import { StatsOverview } from "@/components/dashboard/stats-overview";
+import { Console } from "@/components/dashboard/console";
+import { LogsViewer } from "@/components/dashboard/logs-viewer";
 import { toast } from "sonner";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { hasActiveLicense, loading: licenseLoading } = useActiveLicense(user);
 
@@ -21,6 +26,22 @@ export default function Dashboard() {
     });
     return () => unsub();
   }, [navigate]);
+
+  // Check if user is admin
+  useEffect(() => {
+    if (!user) return;
+    const checkAdminRole = async () => {
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const role = userDoc.data()?.role || "user";
+        setIsAdmin(role === "admin");
+      } catch (error) {
+        console.error("Error checking admin role:", error);
+        setIsAdmin(false);
+      }
+    };
+    checkAdminRole();
+  }, [user]);
 
   // Redirect to license activation if no active license
   useEffect(() => {
@@ -53,7 +74,14 @@ export default function Dashboard() {
           <nav className="flex items-center gap-4 text-sm">
             {user && (
               <>
-                <span className="text-muted-foreground">{user.email}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">{user.email}</span>
+                  {isAdmin && (
+                    <span className="px-2 py-1 rounded-md bg-red-500/20 border border-red-500/50 text-red-300 text-xs font-semibold">
+                      ADMIN
+                    </span>
+                  )}
+                </div>
                 <button
                   onClick={() => signOut(auth)}
                   className="px-3 py-1 rounded-md bg-muted hover:bg-accent"
@@ -68,37 +96,29 @@ export default function Dashboard() {
 
       <main className="container py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <Link to="/" className="text-sm text-primary hover:underline">
-            ← Retour
-          </Link>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="rounded-xl border border-border/60 p-4 bg-card/60">
-            <div className="text-sm text-muted-foreground">Players online</div>
-            <div className="text-2xl font-semibold mt-1">0</div>
-          </div>
-          <div className="rounded-xl border border-border/60 p-4 bg-card/60">
-            <div className="text-sm text-muted-foreground">Servers active</div>
-            <div className="text-2xl font-semibold mt-1">0</div>
-          </div>
-          <div className="rounded-xl border border-border/60 p-4 bg-card/60">
-            <div className="text-sm text-muted-foreground">Commands queued</div>
-            <div className="text-2xl font-semibold mt-1">0</div>
-          </div>
-          <div className="rounded-xl border border-border/60 p-4 bg-card/60">
-            <div className="text-sm text-muted-foreground">Logs / min</div>
-            <div className="text-2xl font-semibold mt-1">0</div>
+          <h1 className="text-2xl font-bold">Dashboard Overview</h1>
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="px-3 py-1 rounded-md bg-primary/20 text-primary hover:bg-primary/30 text-sm"
+              >
+                Admin Panel
+              </Link>
+            )}
+            <a
+              href="/scripts/roblox/TerminalSecureRShield.lua"
+              download
+              className="px-3 py-1 rounded-md bg-muted hover:bg-accent text-sm"
+            >
+              Roblox Script
+            </a>
           </div>
         </div>
 
-        <section className="mt-8 rounded-xl border border-border/60 p-4 bg-card/60">
-          <h2 className="font-semibold mb-3">Placeholder</h2>
-          <p className="text-sm text-muted-foreground">
-            Dashboard is under development. More features coming soon.
-          </p>
-        </section>
+        <StatsOverview />
+        <Console user={user} isAdmin={isAdmin} />
+        <LogsViewer />
       </main>
     </div>
   );
