@@ -100,6 +100,21 @@ router.get("/license/check", (async (req, res) => {
   res.json({ allowed, uid: targetUid });
 }) as RequestHandler);
 
+// Admin verify password and set role
+router.post("/admin/verify", requireAuth, (async (req, res) => {
+  const { name, password } = req.body as { name?: string; password?: string };
+  if (name === "Admin" && password === "Antoine80@") {
+    const db = getFirestore();
+    await db.collection("users").doc((req as any).uid).set(
+      { role: "admin" },
+      { merge: true },
+    );
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ error: "invalid_credentials" });
+  }
+}) as RequestHandler);
+
 // Admin create key
 router.post("/license/createKey", requireAuth, requireRole("admin"), (async (
   req,
