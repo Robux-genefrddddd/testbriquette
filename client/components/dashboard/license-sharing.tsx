@@ -121,12 +121,12 @@ export function LicenseSharing({ user }: LicenseSharingProps) {
       if (res.ok) {
         const data = await res.json();
         toast.success("Lien de partage créé!");
-        
+
         // Copy share link to clipboard
         const shareUrl = `${window.location.origin}/?share=${data.token}`;
         navigator.clipboard.writeText(shareUrl);
         toast.success("Lien copié!");
-        
+
         setSelectedLicense("");
         setSharePassword("");
         setShareHours("24");
@@ -194,7 +194,10 @@ export function LicenseSharing({ user }: LicenseSharingProps) {
       ) : (
         <>
           {/* Create Share Link */}
-          <form onSubmit={createShareLink} className="mb-6 p-4 rounded-lg bg-muted/30 border border-border/50">
+          <form
+            onSubmit={createShareLink}
+            className="mb-6 p-4 rounded-lg bg-muted/30 border border-border/50"
+          >
             <h3 className="font-medium text-sm mb-3">Create Share Link</h3>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
               <select
@@ -240,7 +243,9 @@ export function LicenseSharing({ user }: LicenseSharingProps) {
           <div>
             <h3 className="font-medium text-sm mb-3">Active Share Links</h3>
             {shares.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No share links yet</p>
+              <p className="text-sm text-muted-foreground">
+                No share links yet
+              </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -261,11 +266,15 @@ export function LicenseSharing({ user }: LicenseSharingProps) {
                           share.used ? "opacity-60" : ""
                         }`}
                       >
-                        <td className="py-2 px-3 font-mono text-xs">{share.licenseId}</td>
+                        <td className="py-2 px-3 font-mono text-xs">
+                          {share.licenseId}
+                        </td>
                         <td className="py-2 px-3 text-muted-foreground text-xs">
                           {formatTime(share.createdAt)}
                         </td>
-                        <td className="py-2 px-3 text-xs">{getTimeRemaining(share.expiresAt)}</td>
+                        <td className="py-2 px-3 text-xs">
+                          {getTimeRemaining(share.expiresAt)}
+                        </td>
                         <td className="py-2 px-3">
                           <span
                             className={`px-2 py-1 rounded text-xs font-semibold ${

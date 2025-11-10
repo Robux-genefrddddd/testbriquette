@@ -24,7 +24,7 @@ export default function Admin() {
   const [gateOk, setGateOk] = useState(false);
   const [name, setName] = useState("");
   const [pass, setPass] = useState("");
-  
+
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [licenses, setLicenses] = useState<LicenseKey[]>([]);
   const [newKey, setNewKey] = useState("");
@@ -56,7 +56,11 @@ export default function Admin() {
       setPass("");
       loadAdminData();
     } else {
-      toast.error(data?.error === "invalid_credentials" ? "Identifiants invalides" : "Erreur d'accès");
+      toast.error(
+        data?.error === "invalid_credentials"
+          ? "Identifiants invalides"
+          : "Erreur d'accès",
+      );
     }
   }
 
@@ -124,7 +128,10 @@ export default function Admin() {
     }
   }
 
-  async function updateUserRole(uid: string, newRole: "admin" | "moderator" | "user") {
+  async function updateUserRole(
+    uid: string,
+    newRole: "admin" | "moderator" | "user",
+  ) {
     if (!user) return;
     const token = await user.getIdToken();
     const res = await fetch("/api/admin/update-role", {
@@ -222,7 +229,10 @@ export default function Admin() {
         <div className="container py-4 flex items-center justify-between">
           <h1 className="font-bold">RShield — Admin</h1>
           <div className="flex items-center gap-2">
-            <Link to="/dashboard" className="text-sm text-primary hover:underline">
+            <Link
+              to="/dashboard"
+              className="text-sm text-primary hover:underline"
+            >
               Dashboard
             </Link>
             <button
@@ -234,7 +244,7 @@ export default function Admin() {
           </div>
         </div>
       </header>
-      
+
       <main className="container py-8 grid gap-6">
         {/* Tabs */}
         <div className="flex gap-2 border-b border-border/50">
@@ -276,7 +286,10 @@ export default function Admin() {
                 </thead>
                 <tbody>
                   {adminUsers.map((u) => (
-                    <tr key={u.uid} className="border-b border-border/30 hover:bg-muted/20">
+                    <tr
+                      key={u.uid}
+                      className="border-b border-border/30 hover:bg-muted/20"
+                    >
                       <td className="py-2 px-3">{u.email || "—"}</td>
                       <td className="py-2 px-3 text-muted-foreground text-xs font-mono truncate max-w-xs">
                         {u.uid}
@@ -284,7 +297,9 @@ export default function Admin() {
                       <td className="py-2 px-3">
                         <select
                           value={u.role}
-                          onChange={(e) => updateUserRole(u.uid, e.target.value as any)}
+                          onChange={(e) =>
+                            updateUserRole(u.uid, e.target.value as any)
+                          }
                           className="rounded-md bg-background border border-border/50 px-2 py-1 text-xs"
                         >
                           <option value="user">User</option>
@@ -317,7 +332,7 @@ export default function Admin() {
         {selectedTab === "licenses" && (
           <section className="rounded-xl border border-border/60 p-4 bg-card/60">
             <h2 className="font-semibold mb-4">License Keys</h2>
-            
+
             {/* Create License */}
             <div className="mb-6 p-4 rounded-lg bg-muted/30 border border-border/50">
               <h3 className="font-medium text-sm mb-3">Generate New Key</h3>
@@ -352,7 +367,10 @@ export default function Admin() {
                 </thead>
                 <tbody>
                   {licenses.map((lic) => (
-                    <tr key={lic.key} className="border-b border-border/30 hover:bg-muted/20">
+                    <tr
+                      key={lic.key}
+                      className="border-b border-border/30 hover:bg-muted/20"
+                    >
                       <td className="py-2 px-3 font-mono text-xs">{lic.key}</td>
                       <td className="py-2 px-3">
                         <span

@@ -26,10 +26,7 @@ export function StatsOverview() {
 
   // Real-time listener for active servers
   useEffect(() => {
-    const q = query(
-      collection(db, "servers"),
-      where("active", "==", true),
-    );
+    const q = query(collection(db, "servers"), where("active", "==", true));
 
     const unsub = onSnapshot(
       q,
@@ -57,10 +54,7 @@ export function StatsOverview() {
 
   // Real-time listener for queued commands
   useEffect(() => {
-    const q = query(
-      collection(db, "commands"),
-      where("executed", "==", false),
-    );
+    const q = query(collection(db, "commands"), where("executed", "==", false));
 
     const unsub = onSnapshot(
       q,
@@ -82,10 +76,7 @@ export function StatsOverview() {
   useEffect(() => {
     const calculateLogsPerMin = async () => {
       const oneMinuteAgo = Date.now() - 60 * 1000;
-      const q = query(
-        collection(db, "logs"),
-        where("at", ">", oneMinuteAgo),
-      );
+      const q = query(collection(db, "logs"), where("at", ">", oneMinuteAgo));
 
       try {
         const snapshot = await getDocs(q);
@@ -111,7 +102,8 @@ export function StatsOverview() {
           {stats.playersOnline}
         </div>
         <div className="text-xs text-muted-foreground mt-2">
-          {stats.serversActive} {stats.serversActive === 1 ? "server" : "servers"}
+          {stats.serversActive}{" "}
+          {stats.serversActive === 1 ? "server" : "servers"}
         </div>
       </div>
       <div className="rounded-xl border border-border/60 p-4 bg-card/60">

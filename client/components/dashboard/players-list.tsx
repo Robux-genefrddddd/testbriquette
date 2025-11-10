@@ -53,7 +53,10 @@ export function PlayersList({ user, isAdmin }: PlayersListProps) {
         const allPlayers: PlayerData[] = [];
         snapshot.docs.forEach((doc) => {
           const server = doc.data();
-          if (server.stats?.playerList && Array.isArray(server.stats.playerList)) {
+          if (
+            server.stats?.playerList &&
+            Array.isArray(server.stats.playerList)
+          ) {
             server.stats.playerList.forEach((player: any) => {
               allPlayers.push({
                 name: player.name,

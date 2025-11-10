@@ -20,14 +20,12 @@ interface Log {
 export function LogsViewer() {
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "info" | "warn" | "error">("all");
+  const [filter, setFilter] = useState<"all" | "info" | "warn" | "error">(
+    "all",
+  );
 
   useEffect(() => {
-    const q = query(
-      collection(db, "logs"),
-      orderBy("at", "desc"),
-      limit(100),
-    );
+    const q = query(collection(db, "logs"), orderBy("at", "desc"), limit(100));
 
     const unsub = onSnapshot(
       q,
@@ -82,7 +80,9 @@ export function LogsViewer() {
                   : "border-border/50 text-muted-foreground hover:border-border"
               }`}
             >
-              {lvl === "all" ? "All" : lvl.charAt(0).toUpperCase() + lvl.slice(1)}
+              {lvl === "all"
+                ? "All"
+                : lvl.charAt(0).toUpperCase() + lvl.slice(1)}
             </button>
           ))}
         </div>
@@ -121,9 +121,7 @@ export function LogsViewer() {
                   >
                     {log.level.toUpperCase()}
                   </td>
-                  <td className="py-2 px-3 max-w-xs truncate">
-                    {log.message}
-                  </td>
+                  <td className="py-2 px-3 max-w-xs truncate">{log.message}</td>
                   <td className="py-2 px-3 text-muted-foreground text-xs">
                     {log.serverId || "—"}
                   </td>

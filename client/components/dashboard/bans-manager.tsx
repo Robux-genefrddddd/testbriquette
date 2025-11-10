@@ -55,7 +55,8 @@ export function BansManager({ user, isAdmin }: BansManagerProps) {
 
   const filteredBans = bans.filter(
     (ban) =>
-      ban.robloxUserId.includes(search) || ban.reason.toLowerCase().includes(search.toLowerCase()),
+      ban.robloxUserId.includes(search) ||
+      ban.reason.toLowerCase().includes(search.toLowerCase()),
   );
 
   async function handleCreateBan(e: React.FormEvent) {
@@ -148,7 +149,10 @@ export function BansManager({ user, isAdmin }: BansManagerProps) {
       <h2 className="font-semibold mb-4">Ban Management</h2>
 
       {isAdmin && (
-        <form onSubmit={handleCreateBan} className="mb-6 p-4 rounded-lg bg-muted/30 border border-border/50">
+        <form
+          onSubmit={handleCreateBan}
+          className="mb-6 p-4 rounded-lg bg-muted/30 border border-border/50"
+        >
           <h3 className="font-medium text-sm mb-3">Create Ban</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <input
@@ -223,7 +227,9 @@ export function BansManager({ user, isAdmin }: BansManagerProps) {
                     !ban.active ? "opacity-60" : ""
                   }`}
                 >
-                  <td className="py-2 px-3 font-mono text-xs">{ban.robloxUserId}</td>
+                  <td className="py-2 px-3 font-mono text-xs">
+                    {ban.robloxUserId}
+                  </td>
                   <td className="py-2 px-3">{ban.reason}</td>
                   <td className="py-2 px-3 text-muted-foreground text-xs">
                     {formatTime(ban.createdAt)}

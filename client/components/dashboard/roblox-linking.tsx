@@ -109,14 +109,19 @@ export function RobloxLinking({ user }: RobloxLinkingProps) {
           <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
             <h3 className="font-medium text-sm mb-2">Step 1: Generate Code</h3>
             <p className="text-sm text-muted-foreground mb-3">
-              Click below to generate a 6-digit code for linking your Roblox account.
+              Click below to generate a 6-digit code for linking your Roblox
+              account.
             </p>
             <button
               onClick={generateLinkCode}
               disabled={loading || !!linkCode}
               className="px-4 py-2 bg-primary text-black font-semibold rounded-md hover:bg-primary/90 disabled:opacity-50 text-sm"
             >
-              {loading ? "Generating..." : linkCode ? "Code Generated" : "Generate Code"}
+              {loading
+                ? "Generating..."
+                : linkCode
+                  ? "Code Generated"
+                  : "Generate Code"}
             </button>
           </div>
 
@@ -145,12 +150,16 @@ export function RobloxLinking({ user }: RobloxLinkingProps) {
           )}
 
           <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-            <h3 className="font-medium text-sm mb-2">Step 2: Verify in Roblox</h3>
+            <h3 className="font-medium text-sm mb-2">
+              Step 2: Verify in Roblox
+            </h3>
             <p className="text-sm text-muted-foreground mb-3">
-              The server script will automatically detect your code linkage. Make sure the RShield server script is running in your game.
+              The server script will automatically detect your code linkage.
+              Make sure the RShield server script is running in your game.
             </p>
             <p className="text-xs text-muted-foreground">
-              The link will be confirmed when you join the game server. You can also manually call the API from your game.
+              The link will be confirmed when you join the game server. You can
+              also manually call the API from your game.
             </p>
           </div>
         </div>

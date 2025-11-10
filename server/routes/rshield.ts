@@ -105,10 +105,10 @@ router.post("/admin/verify", requireAuth, (async (req, res) => {
   const { name, password } = req.body as { name?: string; password?: string };
   if (name === "admin" && password === "Antoine80@") {
     const db = getFirestore();
-    await db.collection("users").doc((req as any).uid).set(
-      { role: "admin" },
-      { merge: true },
-    );
+    await db
+      .collection("users")
+      .doc((req as any).uid)
+      .set({ role: "admin" }, { merge: true });
     res.json({ ok: true });
   } else {
     res.status(401).json({ error: "invalid_credentials" });
@@ -126,10 +126,7 @@ router.post("/admin/update-role", requireAuth, requireRole("admin"), (async (
     return res.status(400).json({ error: "invalid_role" });
   }
   const db = getFirestore();
-  await db.collection("users").doc(uid).set(
-    { role },
-    { merge: true },
-  );
+  await db.collection("users").doc(uid).set({ role }, { merge: true });
   res.json({ ok: true });
 }) as RequestHandler);
 
@@ -280,19 +277,16 @@ router.post("/server/register", (async (req, res) => {
   if (!serverId) return res.status(400).json({ error: "missing_serverId" });
   const db = getFirestore();
   const secret = crypto.randomBytes(12).toString("hex");
-  await db
-    .collection("servers")
-    .doc(serverId)
-    .set(
-      {
-        serverId,
-        secret,
-        registeredAt: Date.now(),
-        lastSeen: Date.now(),
-        active: true,
-      },
-      { merge: true },
-    );
+  await db.collection("servers").doc(serverId).set(
+    {
+      serverId,
+      secret,
+      registeredAt: Date.now(),
+      lastSeen: Date.now(),
+      active: true,
+    },
+    { merge: true },
+  );
   res.json({ ok: true, secret });
 }) as RequestHandler);
 
@@ -327,13 +321,10 @@ router.post("/command/:id/execute", (async (req, res) => {
   if (!id) return res.status(400).json({ error: "missing_command_id" });
   const db = getFirestore();
   try {
-    await db
-      .collection("commands")
-      .doc(id)
-      .update({
-        executed: true,
-        executedAt: Date.now(),
-      });
+    await db.collection("commands").doc(id).update({
+      executed: true,
+      executedAt: Date.now(),
+    });
     res.json({ ok: true });
   } catch (error) {
     res.status(404).json({ error: "command_not_found" });
@@ -386,16 +377,14 @@ router.post("/ban", requireAuth, requireRole("moderator"), (async (
   };
   if (!robloxUserId) return res.status(400).json({ error: "missing_params" });
   const db = getFirestore();
-  await db
-    .collection("bans")
-    .add({
-      robloxUserId,
-      reason: reason || "",
-      active: true,
-      createdAt: Date.now(),
-      expiresAt: expiresAt || null,
-      by: (req as any).uid,
-    });
+  await db.collection("bans").add({
+    robloxUserId,
+    reason: reason || "",
+    active: true,
+    createdAt: Date.now(),
+    expiresAt: expiresAt || null,
+    by: (req as any).uid,
+  });
   res.json({ ok: true });
 }) as RequestHandler);
 

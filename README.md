@@ -64,10 +64,12 @@ pnpm install
 #### Obtenir les Credentials
 
 **Configuration Web** (client-side):
+
 1. Aller à **Project Settings** → **Onglet "Général"**
 2. Copier la `firebaseConfig` (déjà dans `client/lib/firebase.ts`)
 
 **Service Account** (server-side):
+
 1. Aller à **Project Settings** → **Onglet "Comptes de Service"**
 2. Cliquer **"Générer une nouvelle clé privée"**
 3. Copier le JSON entier
@@ -108,6 +110,7 @@ Accédez à **http://localhost:8080** dans votre navigateur.
 Les collections se créent automatiquement à la première utilisation. Vous pouvez les initialiser manuellement:
 
 **Collections requises:**
+
 - `users` — Documents utilisateur (email, role, robloxUserId)
 - `licenses` — Clés de licence (key, ownerUid, active, createdAt)
 - `servers` — Serveurs Roblox (serverId, stats, lastSeen)
@@ -131,6 +134,7 @@ Les collections se créent automatiquement à la première utilisation. Vous pou
 ```
 
 **Accès Admin (UI):**
+
 - Cliquer sur **"Admin"** en bas du formulaire de connexion
 - Utiliser: `admin` / `Antoine80@`
 

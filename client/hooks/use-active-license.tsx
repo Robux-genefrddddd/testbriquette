@@ -4,7 +4,9 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 export function useActiveLicense(user: User | null) {
-  const [hasActiveLicense, setHasActiveLicense] = useState<boolean | null>(null);
+  const [hasActiveLicense, setHasActiveLicense] = useState<boolean | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
