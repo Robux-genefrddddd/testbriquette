@@ -18,8 +18,19 @@ export default function Admin() {
 
   async function submitGate(e: React.FormEvent) {
     e.preventDefault();
-    if (name === "Admin" && pass === "Antoine80@") {
+    if (!user) return toast.error("Connectez-vous d'abord");
+    const token = await user.getIdToken();
+    const res = await fetch("/api/admin/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name, password: pass }),
+    });
+    if (res.ok) {
       setGateOk(true);
+      toast.success("Accès accordé");
     } else {
       toast.error("Accès refusé");
     }
