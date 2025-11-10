@@ -120,6 +120,8 @@ export default function Dashboard() {
 
         <StatsOverview />
         <Console user={user} isAdmin={isAdmin} />
+        <PlayersList user={user} isAdmin={isAdmin} />
+        <BansManager user={user} isAdmin={isAdmin} />
         <LogsViewer />
       </main>
     </div>
