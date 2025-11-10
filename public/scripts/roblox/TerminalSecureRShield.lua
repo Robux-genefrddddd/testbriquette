@@ -211,6 +211,7 @@ local function executeCommand(cmd)
 		local message = params.message or "System announcement"
 		print("[RShield] Announcement: " .. message)
 		logEvent("info", "Announcement sent", { message = message })
+		return true
 
 	elseif action == "kick" then
 		local playerUserId = tonumber(params.playerUserId)
@@ -218,7 +219,9 @@ local function executeCommand(cmd)
 		local player = Players:FindFirstChild(tostring(playerUserId))
 		if player then
 			kickPlayer(player, reason)
+			return true
 		end
+		return false
 
 	elseif action == "ban" then
 		local playerUserId = tonumber(params.playerUserId)
@@ -231,17 +234,20 @@ local function executeCommand(cmd)
 		for _, player in pairs(Players:GetPlayers()) do
 			if player.UserId == playerUserId then
 				kickPlayer(player, "You have been banned: " .. reason)
-				break
+				return true
 			end
 		end
+		return true
 
 	elseif action == "restart" then
 		logEvent("warn", "Server restart initiated")
 		wait(5)
 		game:Shutdown()
+		return true
 
 	else
 		warn("[RShield] Unknown command: " .. action)
+		return false
 	end
 end
 
