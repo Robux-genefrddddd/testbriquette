@@ -7,6 +7,8 @@ import { useActiveLicense } from "@/hooks/use-active-license";
 import { StatsOverview } from "@/components/dashboard/stats-overview";
 import { Console } from "@/components/dashboard/console";
 import { LogsViewer } from "@/components/dashboard/logs-viewer";
+import { PlayersList } from "@/components/dashboard/players-list";
+import { BansManager } from "@/components/dashboard/bans-manager";
 import { toast } from "sonner";
 
 export default function Dashboard() {
